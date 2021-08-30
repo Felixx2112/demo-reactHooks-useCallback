@@ -1,24 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useCallback, useState } from "react";
+import ChildComponent from "./components/ChildComponent";
 
 function App() {
+  const [users, setUsers] = useState([]);
+
+  // useCallback cung giong nhu useMemo() se giup cho chung ta ghi nho function
+  // ma khong tao lai mot function moi khi maf App component dc re-render
+  const getData = useCallback((type) => {
+    return fetch(`http://reqres.in/api/${type}`);
+  }, []);
+
+  const handleClick = () => {
+    getData("users")
+      .then((res) => res.json())
+      .then((res) => {
+        const users = res.data;
+        setUsers(users);
+      });
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <p>Data: </p>
+      <button onClick={handleClick}>Get Users Data</button>
+      <p>{JSON.stringify(users)}</p>
+      <ChildComponent getData={getData} />
+    </>
   );
 }
 
